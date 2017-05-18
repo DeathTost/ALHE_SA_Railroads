@@ -17,4 +17,3 @@ class NetworkTree:
     def get_random_rail_segment(self):
         random_rail_segment = sample(self.rail_segments,1)
         return random_rail_segment
-
