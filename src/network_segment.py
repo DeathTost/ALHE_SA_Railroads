@@ -2,9 +2,9 @@ from src.math_utils import distance
 
 class NetworkSegment:
     def __init__(self, city_point1, city_point2):
-        self.cities = []
-        self.cities.append(city_point1)
-        self.cities.append(city_point2)
+        self.cities = set()
+        self.cities.add(city_point1)
+        self.cities.add(city_point2)
         self.is_power_plant_connected = False
         self.power_plant_connection = []
         self.power_plant_connection_length = []
@@ -33,3 +33,10 @@ class NetworkSegment:
     def length(self):
         points = self.cities.copy()
         return distance(points.pop() + (0,),points.pop() + (0,))
+
+    def distance_to_power_plant(self,power_plant):
+        if power_plant in self.power_plant_coords:
+            power_plant_index = self.power_plant_coords.index(power_plant)
+            return self.power_plant_connection_length[power_plant_index]
+        else:
+            return None

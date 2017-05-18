@@ -15,6 +15,19 @@ class NetworkTree:
     def add_new_rail_segment(self,rail_segment):
         self.rail_segments.append(rail_segment)
 
+    def connect_power_plant(self, power_plant_coord):
+        min_distance = float("inf")
+        min_distance_point = None
+        min_distance_segment = None
+
+        for segment in self.rail_segments:
+            cities = segment.get_segment_points()
+            cityA = cities.pop()
+            cityB = cities.pop()
+
+
+
+
     def link_power_plant_to_segment(self, segment, power_plant, link_point):
         if link_point:
             connection_segment = NetworkSegment(power_plant,link_point)
@@ -35,14 +48,14 @@ class NetworkTree:
         random_rail_segment = sample(self.rail_segments,1)
         return random_rail_segment
 
-    def get_rails_and_powerlines_length(self):
+    def get_rails_and_electric_traction_length(self):
         rails_length = 0
-        powerlines_length = 0
+        electric_tractions_length = 0
 
         for segment in self.rail_segments:
             rails_length += segment.length()
             if segment.is_power_plant_connected:
-                for powerline in segment.power_plant_connection_length:
-                    powerlines_length += powerline
+                for electric_traction in segment.power_plant_connection_length:
+                    electric_tractions_length += electric_traction
 
-        return rails_length,powerlines_length
+        return rails_length,electric_tractions_length

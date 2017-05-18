@@ -12,3 +12,4 @@ def vector_length(vect):
 def distance(point1,point2):
     return vector_length(vector(point1,point2))
 
+def projection_nearest_point_on_segment_from_power_plant():
