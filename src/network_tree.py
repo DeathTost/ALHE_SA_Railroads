@@ -1,4 +1,4 @@
-from src.math_utils import distance
+from src.math_utils import distance, projection_nearest_point_on_plane
 from src.network_segment import NetworkSegment
 from random import sample
 
@@ -24,9 +24,17 @@ class NetworkTree:
             cities = segment.get_segment_points()
             cityA = cities.pop()
             cityB = cities.pop()
+            point_between_cities, dist = projection_nearest_point_on_plane(power_plant_coord,cityA,cityB)
 
+            if dist < min_distance:
+                min_distance = dist
+                min_distance_point = point_between_cities
+                min_distance_segment = segment
 
-
+        if min_distance_point is not None:
+            self.link_power_plant_to_segment(min_distance_segment,power_plant_coord,min_distance_point)
+        else:
+            pass
 
     def link_power_plant_to_segment(self, segment, power_plant, link_point):
         if link_point:
@@ -43,6 +51,11 @@ class NetworkTree:
         segment.detach_power_plant_from_segment(power_plant)
         self.power_plant_segments.pop(power_plant)
 
+    def get_segment_with_given_cities(self,cityA,cityB):
+        segment = NetworkSegment(cityA,cityB)
+        segment_index = self.rail_segments.index(segment)
+        found_segment = self.rail_segments[segment_index]
+        return found_segment
 
     def get_random_rail_segment(self):
         random_rail_segment = sample(self.rail_segments,1)
