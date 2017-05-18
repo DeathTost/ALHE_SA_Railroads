@@ -34,7 +34,7 @@ class FileReader:
         return coordinates
 
     def read_cities_coordinates(self, file_name):
-        return FileReader().read_coordinates("Miasta:", "testData.txt")
+        return self.read_coordinates("Miasta:", "testData.txt")
 
     def read_power_stations_coordinates(self, file_name):
-        return FileReader().read_coordinates("Elektrownie:", "testData.txt")
+        return self.read_coordinates("Elektrownie:", "testData.txt")
