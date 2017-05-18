@@ -1,6 +1,6 @@
 from src.network_tree import NetworkTree
 from src.network_segment import NetworkSegment
-from random import sample
+from random import sample, random
 from math import exp, fabs
 
 class SimulatedAnnealing:
@@ -23,7 +23,6 @@ class SimulatedAnnealing:
         self.working_tree = self.generate_starting_tree()
         self.best_tree = self.working_tree
 
-
     def run_algorithm(self):
         history = []
         history.append(self.working_tree)
@@ -36,11 +35,11 @@ class SimulatedAnnealing:
                     self.best_tree = working_tree
             else:
                 p_a = self.calculate_pa_parameter(self.q(y), self.q(working_tree), self.current_temperature)
-                if rand() < p_a:
+                if random() < p_a:
                     working_tree = y
             history.append(y)
-            ++self.current_iteration
-            self.current_temperature = self.current_temperature*alpha
+            self.current_iteration += 1
+            self.current_temperature = self.current_temperature * self.alpha
         return self.best_tree
 
     def generate_starting_tree(self):
@@ -74,7 +73,7 @@ class SimulatedAnnealing:
     def is_end_condition(self):
         if self.current_iteration is self.max_iteration:
             return True
-        if self.final_temperature >  self.current_temperature:
+        if self.current_temperature >  self.final_temperature:
             return True
         return False
 
@@ -87,4 +86,3 @@ class SimulatedAnnealing:
         return exp(-1*difference/temperature)
 
     def generate_random_neighbour(self):
-        
