@@ -72,6 +72,7 @@ class NetworkTree:
             self.add_new_rail_segment(new_segment)
         else:
             pass
+
         return new_segment
 
     def get_adjacency_list(self):

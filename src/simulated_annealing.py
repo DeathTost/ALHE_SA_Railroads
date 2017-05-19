@@ -30,14 +30,14 @@ class SimulatedAnnealing:
 
         while not self.is_end_condition():
             y = self.generate_random_neighbour()
-            if self.q(y) > self.q(working_tree):
-                working_tree = y
-                if self.q(working_tree) > self.q(self.best_tree):
-                    self.best_tree = working_tree
+            if self.q(y) > self.q(self.working_tree):
+                self.working_tree = y
+                if self.q(self.working_tree) > self.q(self.best_tree):
+                    self.best_tree = self.working_tree
             else:
-                p_a = self.calculate_pa_parameter(self.q(y), self.q(working_tree), self.current_temperature)
+                p_a = self.calculate_pa_parameter(self.q(y), self.q(self.working_tree), self.current_temperature)
                 if random() < p_a:
-                    working_tree = y
+                    self.working_tree = y
             history.append(y)
             self.current_iteration += 1
             self.current_temperature = self.current_temperature * self.alpha
@@ -68,13 +68,32 @@ class SimulatedAnnealing:
         for power_plant in self.power_plant_coords:
             starting_tree.connect_power_plant(power_plant)
 
+        print("STARTING TREE")
+        for segment in starting_tree.rail_segments:
+            print("CONNECTED CITIES")
+            print(segment.cities)
+            print("SEGMENT LENGTH")
+            print(segment.length())
+        print("POWER PLANTS")
+        for segment in starting_tree.rail_segments:
+            if segment.is_power_plant_connected:
+                for power_plant_connection in segment.power_plant_connection:
+                    print("COORDS:")
+                    print(segment.power_plant_coords)
+                    print("CONNECTION")
+                    print(power_plant_connection)
+                    print("LENGTH")
+                    print(segment.power_plant_connection_length)
+        print("END")
         starting_tree.evaluate_goal_function(self.railway_cost,self.power_cost)
+        print("GOAL")
+        print(starting_tree.goal_function)
         return starting_tree
 
     def is_end_condition(self):
         if self.current_iteration is self.max_iteration:
             return True
-        if self.current_temperature >  self.final_temperature:
+        if self.current_temperature < self.final_temperature:
             return True
         return False
 

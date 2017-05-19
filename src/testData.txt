@@ -5,6 +5,7 @@ Miasta:
 6 7
 4 6
 9 1
+11 4
 
 Elektrownie:
 8 8
