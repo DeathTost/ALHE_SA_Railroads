@@ -2,6 +2,7 @@ from src.network_tree import NetworkTree
 from src.network_segment import NetworkSegment
 from random import sample, random
 from math import exp, fabs
+import copy
 
 class SimulatedAnnealing:
 
@@ -86,3 +87,12 @@ class SimulatedAnnealing:
         return exp(-1*difference/temperature)
 
     def generate_random_neighbour(self):
+        random_neighbour = NetworkTree()
+
+        rails_count = len(self.working_tree.rail_segments)
+
+        for segment_number in range(rails_count):
+            random_neighbour.add_new_rail_segment(copy.deepcopy(self.working_tree.rail_segments[segment_number]))
+
+        random_neighbour.generate_neighbour()
+        return random_neighbour
