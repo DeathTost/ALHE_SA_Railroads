@@ -10,6 +10,13 @@ class NetworkSegment:
         self.power_plant_connection_length = []
         self.power_plant_coords = []
 
+    def __eq__(self, other):
+        return self.cities == other.cities
+
+    def __hash__(self):
+        cities = self.cities.copy()
+        return hash(tuple(cities.pop(),cities.pop()))
+
     def attach_power_plant_to_segment(self, power_plant_coords, connection_segment, connection_length):
         if not self.power_plant_coords:
             self.is_power_plant_connected = True

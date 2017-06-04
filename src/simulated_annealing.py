@@ -1,7 +1,8 @@
 from src.network_tree import NetworkTree
 from src.network_segment import NetworkSegment
-from random import sample
+from random import sample, random
 from math import exp, fabs
+import copy
 
 class SimulatedAnnealing:
 
@@ -23,24 +24,23 @@ class SimulatedAnnealing:
         self.working_tree = self.generate_starting_tree()
         self.best_tree = self.working_tree
 
-
     def run_algorithm(self):
         history = []
         history.append(self.working_tree)
 
         while not self.is_end_condition():
             y = self.generate_random_neighbour()
-            if self.q(y) > self.q(working_tree):
-                working_tree = y
-                if self.q(working_tree) > self.q(self.best_tree):
-                    self.best_tree = working_tree
+            if self.q(y) > self.q(self.working_tree):
+                self.working_tree = y
+                if self.q(self.working_tree) > self.q(self.best_tree):
+                    self.best_tree = self.working_tree
             else:
-                p_a = self.calculate_pa_parameter(self.q(y), self.q(working_tree), self.current_temperature)
-                if rand() < p_a:
-                    working_tree = y
+                p_a = self.calculate_pa_parameter(self.q(y), self.q(self.working_tree), self.current_temperature)
+                if random() < p_a:
+                    self.working_tree = y
             history.append(y)
-            ++self.current_iteration
-            self.current_temperature = self.current_temperature*alpha
+            self.current_iteration += 1
+            self.current_temperature = self.current_temperature * self.alpha
         return self.best_tree
 
     def generate_starting_tree(self):
@@ -68,13 +68,32 @@ class SimulatedAnnealing:
         for power_plant in self.power_plant_coords:
             starting_tree.connect_power_plant(power_plant)
 
+        print("STARTING TREE")
+        for segment in starting_tree.rail_segments:
+            print("CONNECTED CITIES")
+            print(segment.cities)
+            print("SEGMENT LENGTH")
+            print(segment.length())
+        print("POWER PLANTS")
+        for segment in starting_tree.rail_segments:
+            if segment.is_power_plant_connected:
+                for power_plant_connection in segment.power_plant_connection:
+                    print("COORDS:")
+                    print(segment.power_plant_coords)
+                    print("CONNECTION")
+                    print(power_plant_connection)
+                    print("LENGTH")
+                    print(segment.power_plant_connection_length)
+        print("END")
         starting_tree.evaluate_goal_function(self.railway_cost,self.power_cost)
+        print("GOAL")
+        print(starting_tree.goal_function)
         return starting_tree
 
     def is_end_condition(self):
         if self.current_iteration is self.max_iteration:
             return True
-        if self.final_temperature >  self.current_temperature:
+        if self.current_temperature < self.final_temperature:
             return True
         return False
 
@@ -87,3 +106,12 @@ class SimulatedAnnealing:
         return exp(-1*difference/temperature)
 
     def generate_random_neighbour(self):
+        random_neighbour = NetworkTree()
+
+        rails_count = len(self.working_tree.rail_segments)
+
+        for segment_number in range(rails_count):
+            random_neighbour.add_new_rail_segment(copy.deepcopy(self.working_tree.rail_segments[segment_number]))
+
+        random_neighbour.generate_neighbour()
+        return random_neighbour

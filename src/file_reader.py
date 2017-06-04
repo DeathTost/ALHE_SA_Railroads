@@ -14,7 +14,7 @@ class FileReader:
 
     def read_coordinates(self, name, file_name):
         f = open(file_name, "r")
-        coordinates = []
+        coordinates = set()
         startedLocations = False
         for line in f:
             l = line.rstrip()
@@ -23,7 +23,7 @@ class FileReader:
                 if startedLocations is True:
                     if len(word) != 2:
                         return coordinates
-                    coordinates.append(word)
+                    coordinates.add((float(word[0]),(float(word[1]))))
                     # print(word)
                 if word[0] == name:
                     startedLocations = True
