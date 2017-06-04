@@ -45,6 +45,11 @@ class ReportGenerator:
         pyplot.savefig(self.filename + '_' + datetime.datetime.today().strftime('%Y_%m_%d_%H_%M_%S') + '_iterations.png')
 
     def generate_best_railroad(self, railroad):
+
+        self.ax.set_title('Najlepsze polaczenie miedzy miastami')
+        self.ax.set_xlabel('')
+        self.ax.set_ylabel('')
+
         G=nx.Graph()
 
         for edge in railroad.rail_segments:
@@ -52,9 +57,9 @@ class ReportGenerator:
             G.add_edge(conn[0], conn[1])
 
         graph_pos = nx.shell_layout(G)
-        nx.draw_networkx_nodes(G, graph_pos, node_size=1000, node_color='blue', alpha=0.3)
-
+        nx.draw_networkx_nodes(G, graph_pos, node_size=1000, node_color='blue', alpha=0.3, label = 'M')
         nx.draw_networkx_edges(G, graph_pos)
-      #  nx.draw_networkx_nodes(G, graph_pos, node_size=1000, node_color='blue', alpha=0.3)
+
+
         nx.draw_networkx_labels(G, graph_pos, font_size=12, font_family='sans-serif')
         pyplot.show()
