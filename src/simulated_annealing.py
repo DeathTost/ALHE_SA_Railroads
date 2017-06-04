@@ -1,5 +1,5 @@
-from src.network_tree import NetworkTree
-from src.network_segment import NetworkSegment
+from network_tree import NetworkTree
+from network_segment import NetworkSegment
 from random import sample, random
 from math import exp, fabs
 import copy

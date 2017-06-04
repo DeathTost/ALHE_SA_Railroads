@@ -1,4 +1,4 @@
-from src.math_utils import distance
+from math_utils import distance
 
 class NetworkSegment:
     def __init__(self, city_point1, city_point2):
