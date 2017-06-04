@@ -87,4 +87,3 @@ class SimulatedAnnealing:
         return exp(-1*difference/temperature)
 
     def generate_random_neighbour(self):
-        
