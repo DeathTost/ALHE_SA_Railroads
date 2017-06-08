@@ -1,5 +1,5 @@
-from network_tree import NetworkTree
-from network_segment import NetworkSegment
+from src.network_tree import NetworkTree
+from src.network_segment import NetworkSegment
 from random import sample, random
 from math import exp, fabs
 import copy
@@ -86,6 +86,12 @@ class SimulatedAnnealing:
                     print(segment.power_plant_connection_length)
         print("END")
         starting_tree.evaluate_goal_function(self.railway_cost,self.power_cost)
+        print("INITIAL NETWORK SIZE")
+        lengths = starting_tree.get_rails_and_electric_traction_length()
+        print(lengths[1]*self.power_cost + lengths[0]*self.railway_cost)
+
+        print("Q FUNCTION")
+        print(self.q(starting_tree))
         print("GOAL")
         print(starting_tree.goal_function)
         return starting_tree
@@ -98,8 +104,9 @@ class SimulatedAnnealing:
         return False
 
     def q(self, point):
-        lengths = point.get_rails_and_electric_traction_length()
-        return lengths[1]*self.power_cost + lengths[0]*self.railway_cost
+        return point.evaluate_goal_function(self.railway_cost,self.power_cost )
+        #lengths = point.get_rails_and_electric_traction_length()
+        #return lengths[1]*self.power_cost + lengths[0]*self.railway_cost
 
     def calculate_pa_parameter(self, q_y, q_working_tree, temperature):
         difference = fabs(q_y - q_working_tree)

@@ -1,5 +1,5 @@
-from math_utils import distance, projection_nearest_point_on_plane
-from network_segment import NetworkSegment
+from src.math_utils import distance, projection_nearest_point_on_plane
+from src.network_segment import NetworkSegment
 from random import sample
 
 class NetworkTree:

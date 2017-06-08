@@ -1,7 +1,20 @@
-from file_reader import FileReader
-from simulated_annealing import SimulatedAnnealing
-from report_generator import ReportGenerator
+from src.file_reader import FileReader
+from src.simulated_annealing import SimulatedAnnealing
+from src.report_generator import ReportGenerator
 
+test_file_name = "testData.txt"
+arg_file_name = "args.txt"
+
+args = FileReader().read_arguments(arg_file_name)
+print(args)
+for arg in args:
+    max_iteration = arg[0]
+    starting_temp = arg[1]
+    final_temp = arg[2]
+    alpha = arg[3]
+
+rail_cost = FileReader().read_railway_unit_cost(test_file_name)
+traction_cost = FileReader().read_electric_traction_unit_cost(test_file_name)
 power_plant_coords = FileReader().read_power_stations_coordinates("testData.txt")
 print("POWER PLANT")
 print(power_plant_coords)
@@ -13,8 +26,8 @@ print(cities_coords)
 
 
 print("RUN ALGORITHM")
-
-heuristic = SimulatedAnnealing(cities_coords,power_plant_coords,10,4,2,10,100,0.8)
+#cities_coords, power_plant_coords, given_max_iteration,rail_cost, electric_cost, given_final_temperature, given_starting_temperature, alpha
+heuristic = SimulatedAnnealing(cities_coords,power_plant_coords,max_iteration,rail_cost,traction_cost,final_temp,starting_temp,alpha)
 heuristic.run_algorithm()
 
 print("\n\n\nBEST TREE")
@@ -36,6 +49,11 @@ for segment in heuristic.best_tree.rail_segments:
             print(segment.power_plant_connection_length)
 
 heuristic.best_tree.evaluate_goal_function(4,2)
+print("FINAL NETWORK SIZE")
+lengths = heuristic.best_tree.get_rails_and_electric_traction_length()
+print(lengths[1]*heuristic.power_cost + lengths[0]*heuristic.railway_cost)
+print("Q FUNCTION")
+print(heuristic.q(heuristic.best_tree))
 print("GOAL")
 print(heuristic.best_tree.goal_function)
 

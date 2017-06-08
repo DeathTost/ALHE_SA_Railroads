@@ -2,7 +2,7 @@ class FileReader:
 
     def read_railway_unit_cost(self, file_name):
         f = open(file_name, "r")
-        line = f.readline().split();
+        line = f.readline().split()
         f.close()
         return int(line[4])
 
@@ -11,6 +11,18 @@ class FileReader:
         line = f.readlines()[1].split()
         f.close()
         return int(line[4])
+
+    def read_arguments(self, file_name):
+        file = open(file_name, "r")
+        args = []
+
+        for line in file:
+            row = ("".join(line.split())).split(",")
+            args.append(
+                (int(row[0]), float(row[1]), float(row[2]), float(row[3])))
+
+        file.close()
+        return args
 
     def read_coordinates(self, name, file_name):
         f = open(file_name, "r")
@@ -34,7 +46,7 @@ class FileReader:
         return coordinates
 
     def read_cities_coordinates(self, file_name):
-        return self.read_coordinates("Miasta:", "testData.txt")
+        return self.read_coordinates("Miasta:", file_name)
 
     def read_power_stations_coordinates(self, file_name):
-        return self.read_coordinates("Elektrownie:", "testData.txt")
+        return self.read_coordinates("Elektrownie:", file_name)
