@@ -30,6 +30,20 @@ print("RUN ALGORITHM")
 heuristic = SimulatedAnnealing(cities_coords,power_plant_coords,max_iteration,rail_cost,traction_cost,final_temp,starting_temp,alpha)
 heuristic.run_algorithm()
 
+
+
+
+report = ReportGenerator()
+
+#report.generate_best_railroad(heuristic.best_tree, cities_coords, power_plant_coords, rail_cost, traction_cost, "asd")
+
+costs = [1, 2, 3, 8]
+report.generate_diagram(costs, "asd")
+
+
+
+
+'''
 print("\n\n\nBEST TREE")
 for segment in heuristic.best_tree.rail_segments:
     print("CONNECTED CITIES")
@@ -61,3 +75,12 @@ print(heuristic.best_tree.goal_function)
 report = ReportGenerator("asd")
 
 report.generate_best_railroad(heuristic.best_tree)
+
+'''
+'''
+report = ReportGenerator()
+costs = [1, 2, 3, 8]
+report.generate_diagram(costs, "asd")
+'''
+
+

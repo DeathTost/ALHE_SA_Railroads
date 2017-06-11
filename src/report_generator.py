@@ -4,47 +4,20 @@ import networkx as nx
 
 class ReportGenerator:
 
-    def __init__(self, file_to_write):
-        self.filename = file_to_write
-        fig = pyplot.figure()
-        self.ax = fig.add_axes([0.1, 0.1, 0.55, 0.75])
-        self.ax.set_title('Przebieg dzialania algorytmu')
-        self.ax.set_xlabel('Numer iteracji i')
-        self.ax.set_ylabel('Wartosc funkcji celu q')
-        self.data = []
+    def generate_diagram(self, costs, filename):
+        pyplot.title('Przebieg dzialania algorytmu')
+        pyplot.xlabel('Numer iteracji i')
+        pyplot.ylabel('Wartosc funkcji celu q')
 
-    def set_params(self, max_iterations_, rail_cost_, electric_cost_, given_final_temperature_, given_starting_temperature_, alpha_):
-        self.max_iterations = max_iterations_
-        self.rail_cost = rail_cost_
-        self.electric_cost = electric_cost_
-        self.given_final_temperature = given_final_temperature_
-        self.given_starting_temperature = given_starting_temperature_
-        self.alpha = alpha_
+        iterations = range(1, len(costs) + 1)
+        pyplot.plot(iterations, costs, 'ro', color='red', label='q(i)')
 
-    def add_graph_point(self, value):
-        self.data.append(value)
+        pyplot.legend(bbox_to_anchor=(0.8, 1.08), loc=2, borderaxespad=0.)
+        #pyplot.show()
+        pyplot.savefig(filename + '_' + '_cost_diagram.png')
+        pyplot.close()
 
-    def add_graph_points(self, points):
-        self.data = points
-
-    def generate_graph(self):
-
-        iterations = range(1, len(self.data) + 1)
-        self.ax.plot(iterations, self.data, 'ro', color='red', label='q(i)')
-
-        self.ax.plot(range(0), range(0), color='white', label='\nParams: '
-                                                              + '\nMax_iter: ' + str(self.max_iterations)
-                                                              + '\nRail_cost: ' + str(self.rail_cost)
-                                                              + '\nElectric_cost: ' + str(self.electric_cost)
-                                                              + '\nFinal_temp: ' + str(self.given_final_temperature)
-                                                              + '\nStart_temp: ' + str(self.given_starting_temperature)
-                                                              + '\nAlpha: ' + str(self.alpha) )
-
-        self.ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-        # pyplot.show()
-        pyplot.savefig(self.filename + '_' + datetime.datetime.today().strftime('%Y_%m_%d_%H_%M_%S') + '_iterations.png')
-
-    def generate_best_railroad(self, railTree, cities, electric_powers,cost_traction, cost_power_lines, filename, params):
+    def generate_best_railroad(self, railTree, cities, electric_powers,cost_traction, cost_power_lines, filename):
         figure, axes = pyplot.subplots()
         g = nx.Graph()
 
@@ -57,3 +30,36 @@ class ReportGenerator:
         powerNodes = {i: i for i in electric_powers}
         nx.draw_networkx_nodes(g, powerNodes, powerNodes.keys(), node_color='red', node_size=25,
                                label='PowerStation' + '\n' + 'Length: ' + str(format(powers_len, '.5f')) + '\n' + 'Cost: ' + str(cost_power_lines) + '\n', ax=axes)
+
+        for seg in railTree.rail_segments:
+            if seg.is_power_plant_connected is True:
+                for power_seg in seg.power_plant_connection:
+                    points_set = power_seg.cities.copy()
+                    if len(points_set) == 2:
+                        point1 = points_set.pop()
+                        if not cityNodes.has_key(point1) and not powerNodes.has_key(point1):
+                            pos = {point1: point1}
+                            nx.draw_networkx_nodes(g, pos, pos.keys(), node_color='white', node_size=10, ax=axes)
+                        point2 = points_set.pop()
+                        if not cityNodes.has_key(point2) and not powerNodes.has_key(point2):
+                            pos = {point2: point2}
+                            nx.draw_networkx_nodes(g, pos, pos.keys(), node_color='white', node_size=10, ax=axes)
+                        pos = {point1: point1, point2: point2}
+                        nx.draw_networkx_edges(g, pos, [(point1, point2)], edge_color='red', ax=axes)
+            points_set = seg.cities.copy()
+            point1 = points_set.pop()
+            point2 = points_set.pop()
+            pos = {point1: point1, point2: point2}
+            nx.draw_networkx_edges(g, pos, [(point1, point2)], edge_color='black', ax=axes)
+
+        pyplot.gca().set_aspect('equal', adjustable='box')
+        pyplot.xlabel('wspolrzedna x')
+        pyplot.ylabel('wspolrzedna y')
+        pyplot.title('Optymalna siec kolejowa')
+        handles, labels = axes.get_legend_handles_labels()
+        legend = axes.legend(handles, labels, loc='upper center', ncol=3, bbox_to_anchor=(0.5, -0.1))
+        legend.get_frame().set_alpha(0.5)
+        file_out = filename + '_city_graph.png'
+        pyplot.savefig(file_out, bbox_extra_artists=(legend,), bbox_inches='tight')
+       # pyplot.show()
+        pyplot.close(figure)
