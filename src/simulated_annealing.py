@@ -27,6 +27,8 @@ class SimulatedAnnealing:
     def run_algorithm(self):
         history = []
         history.append(self.working_tree)
+        goal_per_iteration = []
+        goal_per_iteration.append(self.working_tree.goal_function)
 
         while not self.is_end_condition():
             y = self.generate_random_neighbour()
@@ -41,7 +43,11 @@ class SimulatedAnnealing:
             history.append(y)
             self.current_iteration += 1
             self.current_temperature = self.current_temperature * self.alpha
-        return self.best_tree
+
+            self.working_tree.evaluate_goal_function(self.railway_cost,self.power_cost)
+            goal_per_iteration.append(self.working_tree.goal_function)
+
+        return goal_per_iteration
 
     def generate_starting_tree(self):
         starting_tree = NetworkTree()
@@ -68,45 +74,23 @@ class SimulatedAnnealing:
         for power_plant in self.power_plant_coords:
             starting_tree.connect_power_plant(power_plant)
 
-        print("STARTING TREE")
-        for segment in starting_tree.rail_segments:
-            print("CONNECTED CITIES")
-            print(segment.cities)
-            print("SEGMENT LENGTH")
-            print(segment.length())
-        print("POWER PLANTS")
-        for segment in starting_tree.rail_segments:
-            if segment.is_power_plant_connected:
-                for power_plant_connection in segment.power_plant_connection:
-                    print("COORDS:")
-                    print(segment.power_plant_coords)
-                    print("CONNECTION")
-                    print(power_plant_connection)
-                    print("LENGTH")
-                    print(segment.power_plant_connection_length)
-        print("END")
         starting_tree.evaluate_goal_function(self.railway_cost,self.power_cost)
-        print("INITIAL NETWORK SIZE")
-        lengths = starting_tree.get_rails_and_electric_traction_length()
-        print(lengths[1]*self.power_cost + lengths[0]*self.railway_cost)
 
-        print("Q FUNCTION")
-        print(self.q(starting_tree))
-        print("GOAL")
-        print(starting_tree.goal_function)
         return starting_tree
 
     def is_end_condition(self):
-        if self.current_iteration is self.max_iteration:
+        if self.current_iteration == self.max_iteration:
+            print('Finished iterations')
+            print(self.current_iteration)
             return True
         if self.current_temperature < self.final_temperature:
+            print('Finished temperature')
+            print(self.current_iteration)
             return True
         return False
 
     def q(self, point):
         return point.evaluate_goal_function(self.railway_cost,self.power_cost )
-        #lengths = point.get_rails_and_electric_traction_length()
-        #return lengths[1]*self.power_cost + lengths[0]*self.railway_cost
 
     def calculate_pa_parameter(self, q_y, q_working_tree, temperature):
         difference = fabs(q_y - q_working_tree)

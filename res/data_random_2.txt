@@ -1,0 +1,27 @@
+Koszt jednostkowy budowy kolei: 2
+Koszt jednostkowy budowy trakcji: 1
+
+Miasta:
+70 40
+44 84
+56 6
+83 22
+11 91
+51 55
+24 7
+31 27
+37 47
+5 5
+71 88
+52 92
+5 55
+48 35
+
+Elektrownie:
+49 14
+88 30
+33 23
+55 35
+76 45
+76 65
+17 90

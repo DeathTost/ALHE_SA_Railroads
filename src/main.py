@@ -1,88 +1,63 @@
 from src.file_reader import FileReader
 from src.simulated_annealing import SimulatedAnnealing
 from src.report_generator import ReportGenerator
+import os.path
 
-test_file_name = "testData.txt"
-arg_file_name = "args.txt"
+#files and paths
+test_file_name = "data_groups_2"
+arg_file_name = "args"
+folder_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'res'))
+arg_file_path = folder_path + "\\" + arg_file_name+".txt"
+test_file_path = folder_path + "\\" + test_file_name+".txt"
 
-args = FileReader().read_arguments(arg_file_name)
-print(args)
+#loading arguments
+args = FileReader().read_arguments(arg_file_path)
 for arg in args:
     max_iteration = arg[0]
     starting_temp = arg[1]
     final_temp = arg[2]
     alpha = arg[3]
 
-rail_cost = FileReader().read_railway_unit_cost(test_file_name)
-traction_cost = FileReader().read_electric_traction_unit_cost(test_file_name)
-power_plant_coords = FileReader().read_power_stations_coordinates("testData.txt")
-print("POWER PLANT")
-print(power_plant_coords)
-
-cities_coords = FileReader().read_cities_coordinates("testData.txt")
-print("CITIES")
-print(cities_coords)
+rail_cost = FileReader().read_railway_unit_cost(test_file_path)
+traction_cost = FileReader().read_electric_traction_unit_cost(test_file_path)
+power_plant_coords = FileReader().read_power_stations_coordinates(test_file_path)
+cities_coords = FileReader().read_cities_coordinates(test_file_path)
 
 
+#heursitic results
+results = []
+for i in range(20):
+    heuristic = SimulatedAnnealing(cities_coords, power_plant_coords, max_iteration, rail_cost, traction_cost,
+                                   final_temp, starting_temp, alpha)
+    result = heuristic.run_algorithm()
+    heuristic.best_tree.evaluate_goal_function(rail_cost,traction_cost)
+    report = ReportGenerator()
+    report.generate_best_railroad(heuristic.best_tree,cities_coords,power_plant_coords,rail_cost,traction_cost,test_file_name,i)
+    results.append(result)
 
-print("RUN ALGORITHM")
-#cities_coords, power_plant_coords, given_max_iteration,rail_cost, electric_cost, given_final_temperature, given_starting_temperature, alpha
-heuristic = SimulatedAnnealing(cities_coords,power_plant_coords,max_iteration,rail_cost,traction_cost,final_temp,starting_temp,alpha)
-heuristic.run_algorithm()
+#process all results
+values_per_iteration = {}
 
+for result in results:
+    for i, goal in enumerate(result):
+        values_per_iteration.setdefault(i,[]).append(goal)
 
+min_per_iteration = []
+avg_per_iteration = []
+max_per_iteration = []
+step = int(len(values_per_iteration)/10)
 
+for i, iteration in enumerate(values_per_iteration.keys()):
+    values = values_per_iteration[iteration]
+    avg_value = sum(values)/len(values)
+    min_value = 0 if not (i % step == 1) else avg_value - min(values)
+    max_value = 0 if not (i % step == 1) else max(values) - avg_value
+    min_per_iteration.append(min_value)
+    avg_per_iteration.append(avg_value)
+    max_per_iteration.append(max_value)
 
-report = ReportGenerator()
+#average diagram
+final_report = ReportGenerator()
+final_report.generate_average_diagram(min_per_iteration,max_per_iteration,avg_per_iteration,starting_temp,alpha,test_file_name)
 
-#report.generate_best_railroad(heuristic.best_tree, cities_coords, power_plant_coords, rail_cost, traction_cost, "asd")
-
-costs = [1, 2, 3, 8]
-#report.generate_diagram(costs, "asd")
-
-report.generate_average_diagram([1,2,3],[4,4,4],[5,6,7], "asd")
-
-
-
-
-'''
-print("\n\n\nBEST TREE")
-for segment in heuristic.best_tree.rail_segments:
-    print("CONNECTED CITIES")
-    print(segment.cities)
-   # print("SEGMENT LENGTH")
-   # print(segment.length())
-
-print("\n\n\nPOWER PLANTS")
-for segment in heuristic.best_tree.rail_segments:
-    if segment.is_power_plant_connected:
-        for power_plant_connection in segment.power_plant_connection:
-            print("COORDS:")
-            print(segment.power_plant_coords)
-            print("CONNECTION")
-            print(power_plant_connection)
-            print("LENGTH")
-            print(segment.power_plant_connection_length)
-
-heuristic.best_tree.evaluate_goal_function(4,2)
-print("FINAL NETWORK SIZE")
-lengths = heuristic.best_tree.get_rails_and_electric_traction_length()
-print(lengths[1]*heuristic.power_cost + lengths[0]*heuristic.railway_cost)
-print("Q FUNCTION")
-print(heuristic.q(heuristic.best_tree))
-print("GOAL")
-print(heuristic.best_tree.goal_function)
-
-
-report = ReportGenerator("asd")
-
-report.generate_best_railroad(heuristic.best_tree)
-
-'''
-'''
-report = ReportGenerator()
-costs = [1, 2, 3, 8]
-report.generate_diagram(costs, "asd")
-'''
-
-
+print('DONE')
