@@ -63,3 +63,22 @@ class ReportGenerator:
         pyplot.savefig(file_out, bbox_extra_artists=(legend,), bbox_inches='tight')
        # pyplot.show()
         pyplot.close(figure)
+
+    def generate_average_diagram(self, min_val, max_val, avg_val, filename):
+        size = len(min_val)
+        figure, axes = pyplot.subplots()
+
+        x = range(1, size + 1)
+        y = avg_val
+
+        pyplot.xlabel('Numer iteracji i')
+        pyplot.ylabel('Funkcja celu q')
+        pyplot.title('Przebieg dzialania algorytmu')
+        pyplot.errorbar(x, y, yerr=[min_val, max_val], capsize=2, color='black', label='O(i)')
+
+        handles, labels = axes.get_legend_handles_labels()
+        legend = axes.legend(handles, labels, loc='upper center', ncol=2, bbox_to_anchor=(0.5, -0.1))
+        legend.get_frame().set_alpha(0.5)
+        file_out = filename + '_summary.png'
+        pyplot.savefig(file_out, bbox_extra_artists=(legend,), bbox_inches='tight')
+        pyplot.close(figure)

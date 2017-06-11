@@ -38,7 +38,9 @@ report = ReportGenerator()
 #report.generate_best_railroad(heuristic.best_tree, cities_coords, power_plant_coords, rail_cost, traction_cost, "asd")
 
 costs = [1, 2, 3, 8]
-report.generate_diagram(costs, "asd")
+#report.generate_diagram(costs, "asd")
+
+report.generate_average_diagram([1,2,3],[4,4,4],[5,6,7], "asd")
 
 
 
